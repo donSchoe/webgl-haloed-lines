@@ -1,0 +1,82 @@
+<html>
+ <head>
+  <title>Haloed Lines with WebGL</title>
+  <script type="text/javascript" src="mat4.js"></script>
+  <script type="text/javascript" src="halo.js"></script>
+  <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+ </head>
+ <body onload="onready();">
+  <center>
+   <h1>Haloed Lines with WebGL</h1><p>WebGL, JavaScript and HTML5</p>
+   <canvas width="400" height="300">Your browser doesn't appear to support either <a href="http://html5test.com/" target="_blank">HTML5</a> or <a href="http://get.webgl.org/" target="_blank">WebGL</a>.</canvas>
+  <h3>Haloed Lines algorithm</h3>
+  </center>
+  <!-- language: lang-js -->
+  <p><pre class="prettyprint">
+function haloLines() {
+
+    // Enables material coloring.
+    gl.enable(gl.COLOR_MATERIAL);
+
+    // Disables color buffer.
+    gl.colorMask(false, false, false, false);
+
+    // Enables depth buffer for writing halos.
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LESS);
+    gl.depthMask(true);
+
+    // Increases line width.
+    gl.lineWidth(7.0);
+
+    // Renders halos without color.
+    drawLines();
+
+    // Enables writing to the color buffer.
+    gl.colorMask(true, true, true, true);
+
+    // Ensures depth testing is on, passes GL_LEQUAL. 
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+
+    // Restores line width.
+    gl.lineWidth(3.0);
+
+    // Renders lines.
+    drawLines();
+    
+}</pre></p>
+  <center>
+  <h3>Drawing lines of any object</h3>
+  </center>
+  <p><pre class="prettyprint">
+function drawLines() {
+
+    // Cube vertices
+    var vtx = new Float32Array([
+                                -1.0, -1.0,  1.0,
+                                 1.0, -1.0,  1.0,
+                                 1.0,  1.0,  1.0,
+                                -1.0,  1.0,  1.0,
+                                -1.0, -1.0, -1.0,
+                                -1.0,  1.0, -1.0,
+                                 1.0,  1.0, -1.0,
+                                 1.0, -1.0, -1.0]);
+
+    // Drawing indices
+    var idx = new Uint16Array([0, 1, 1, 2, 2, 3, 3, 0,
+                               4, 5, 5, 6, 6, 7, 7, 4,
+                               0, 4, 1, 7, 2, 6, 3, 5,
+                               0, 2, 4, 3, 5, 7, 1, 6, 0, 7, 2, 5]);
+    initBuffers(vtx, idx);
+
+    // Color and draw
+    gl.uniform4f(shaderProgram.colorUniform, 0.3, 0.3, 0.3, 1.0);
+    gl.drawElements(gl.LINES, 36, gl.UNSIGNED_SHORT, 0);
+
+}</pre></p>
+  <center>
+<p>Full source on <a href="http://github.com/donschoe/webgl-haloed-lines" target="_blank">github.com/donschoe/webgl-haloed-lines</a></p>
+  </center>
+ </body>
+</html>

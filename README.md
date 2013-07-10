@@ -15,7 +15,7 @@ details.
 You should have received a copy of the GNU General Public License along with
 this program. If not, see <http://www.gnu.org/licenses/>.
 
-# Latest version and demo site
+### Latest version and demo site
 
 The latest version is available at github:
 - http://github.com/donschoe/webgl-haloed-lines
@@ -23,7 +23,7 @@ The latest version is available at github:
 Demo site is available:
 - http://webgl.qhor.net/halo
 
-# 3rd party libraries
+### 3rd party libraries
 
 glMatrix (mat4.js) is Copyright (c) 2013, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 - https://github.com/toji/gl-matrix
