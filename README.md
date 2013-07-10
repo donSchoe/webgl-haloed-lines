@@ -1,5 +1,14 @@
 # Haloed Lines with WebGL
 
+Implementation of the haloed-lines-algorithm by Arthur Appel et al. (1979) using WebGL, JavaScript and HTML5.
+
+The haloed-line-algorithm is a method in computer graphics to represent three-dimensional objects. The drawn lines are enhanced by an invisible outline, the halo, which covers lines in the back and therefore emphasizes the effects of three-dimensionality.
+
+A demo site is available here: <http://webgl.qhor.net/halo>
+
+
+### License
+
 Copyright (c) 2013 Alexander Schoedon <schoedon@uni-potsdam.de>
 
 This program is free software: you can redistribute it and/or modify it under
@@ -15,15 +24,7 @@ details.
 You should have received a copy of the GNU General Public License along with
 this program. If not, see <http://www.gnu.org/licenses/>.
 
-### Latest version and demo site
-
-The latest version is available at github:
-- http://github.com/donschoe/webgl-haloed-lines
-
-Demo site is available:
-- http://webgl.qhor.net/halo
 
 ### 3rd party libraries
 
-glMatrix (mat4.js) is Copyright (c) 2013, Brandon Jones, Colin MacKenzie IV. All rights reserved.
-- https://github.com/toji/gl-matrix
+- glMatrix (mat4.js) is Copyright (c) 2013, Brandon Jones, Colin MacKenzie IV. All rights reserved. <https://github.com/toji/gl-matrix>

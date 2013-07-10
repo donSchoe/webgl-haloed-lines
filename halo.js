@@ -1,18 +1,28 @@
 var fragShaderSource = "\
 precision highp float;\
 uniform vec4 u_color;\
+varying vec3 v_lighting;\
 void main(void) {\
-gl_FragColor = u_color;\
+    gl_FragColor = vec4(u_color.rgb * v_lighting, u_color.a);\
 }\
 ";
 
 var vtxShaderSource = "\
 attribute vec3 a_position;\
+attribute vec3 a_normal;\
 uniform vec4 u_color;\
 uniform mat4 u_mvMatrix;\
 uniform mat4 u_pMatrix;\
+uniform mat4 u_nrMatrix;\
+varying vec3 v_lighting;\
 void main(void) {\
-gl_Position = u_pMatrix * u_mvMatrix * vec4(a_position, 1.0);\
+    gl_Position = u_pMatrix * u_mvMatrix * vec4(a_position, 1.0);\
+    vec3 ambientLight = vec3(0.3, 0.3, 0.5);\
+    vec3 directionalColor = vec3(0.6, 0.5, 0.1);\
+    vec3 directionalVector = vec3(0.9, 0.8, 0.7);\
+    vec4 transformedNormal = u_nrMatrix * vec4(a_normal, 1.0);\
+    float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);\
+    v_lighting = ambientLight + (directionalColor * directional);\
 }\
 ";
 
@@ -23,7 +33,7 @@ function get_shader(type, source) {
     return shader;
 }
 
-var gl, pMatrix, mvMatrix, vbuf,ibuf;
+var gl, pMatrix, mvMatrix, vbuf, ibuf;
 
 function initGl() {
     var canvas = document.getElementsByTagName('canvas')[0];
@@ -53,10 +63,10 @@ function initScene() {
                   0.3, -0.3,  0.3,  0.0,
                   0.0,  0.0, -6.0,  1.0];
     // Perspective
-    pMatrix =   [ 3.0,  0.0,  0.0,  0.0,
-                  0.0,  3.0,  0.0,  0.0,
-                  0.0,  0.0, -1.0, -1.0,
-                  0.0,  0.0, -0.2,  0.0]; // @TODO
+    pMatrix = [0.0, 0.0, 0.0, 0.0,
+               0.0, 0.0, 0.0, 0.0,
+               0.0, 0.0, 0.0, 0.0,
+               0.0, 0.0, 0.0, 0.0];
     mat4.perspective(pMatrix, 20.0, 400.0 / 300.0, 0.1, 1000.0);
     gl.clearColor(1.0,  1.0,  1.0,  0.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -69,12 +79,6 @@ function initBuffer(glELEMENT_ARRAY_BUFFER, data) {
     gl.bindBuffer(glELEMENT_ARRAY_BUFFER, buf);
     gl.bufferData(glELEMENT_ARRAY_BUFFER, data, gl.STATIC_DRAW);
     return buf;
-}
-
-function initBuffers(vtx, idx) {
-    vbuf = initBuffer(gl.ARRAY_BUFFER, vtx);
-    ibuf = initBuffer(gl.ELEMENT_ARRAY_BUFFER, idx);
-    gl.vertexAttribPointer(shaderProgram.aposAttrib, 3, gl.FLOAT, false, 0, 0);
 }
 
 function onready() {
@@ -125,22 +129,97 @@ function haloLines() {
 
 function drawLines() {
     // Cube vertices
-    var vtx = new Float32Array([-1.0, -1.0,  1.0,
+    var vtx = new Float32Array([// Front face
+                                -1.0, -1.0,  1.0,
                                  1.0, -1.0,  1.0,
                                  1.0,  1.0,  1.0,
                                 -1.0,  1.0,  1.0,
+                                // Back face
                                 -1.0, -1.0, -1.0,
                                 -1.0,  1.0, -1.0,
                                  1.0,  1.0, -1.0,
-                                 1.0, -1.0, -1.0]);
+                                 1.0, -1.0, -1.0, 
+                                // Top face
+                                -1.0,  1.0, -1.0,
+                                -1.0,  1.0,  1.0,
+                                 1.0,  1.0,  1.0, 
+                                 1.0,  1.0, -1.0,
+                                // Bottom face
+                                -1.0, -1.0, -1.0,
+                                 1.0, -1.0, -1.0,
+                                 1.0, -1.0,  1.0,
+                                -1.0, -1.0,  1.0,
+                                // Right face
+                                 1.0, -1.0, -1.0,
+                                 1.0,  1.0, -1.0,
+                                 1.0,  1.0,  1.0,
+                                 1.0, -1.0,  1.0,
+                                // Left face
+                                -1.0, -1.0, -1.0,
+                                -1.0, -1.0,  1.0,
+                                -1.0,  1.0,  1.0,
+                                -1.0,  1.0, -1.0 ]);
+  // Cube normals
+  var nrx = new Float32Array([  // Front face
+                                 0.0,  0.0,  1.0,
+                                 0.0,  0.0,  1.0,
+                                 0.0,  0.0,  1.0,
+                                 0.0,  0.0,  1.0,
+                                // Back face
+                                 0.0,  0.0, -1.0,
+                                 0.0,  0.0, -1.0,
+                                 0.0,  0.0, -1.0,
+                                 0.0,  0.0, -1.0,
+                                // Top face
+                                 0.0,  1.0,  0.0,
+                                 0.0,  1.0,  0.0,
+                                 0.0,  1.0,  0.0,
+                                 0.0,  1.0,  0.0,
+                                // Bottom face
+                                 0.0, -1.0,  0.0,
+                                 0.0, -1.0,  0.0,
+                                 0.0, -1.0,  0.0,
+                                 0.0, -1.0,  0.0,
+                                // Right face
+                                 1.0,  0.0,  0.0,
+                                 1.0,  0.0,  0.0,
+                                 1.0,  0.0,  0.0,
+                                 1.0,  0.0,  0.0,
+                                // Left face
+                                -1.0,  0.0,  0.0,
+                                -1.0,  0.0,  0.0,
+                                -1.0,  0.0,  0.0,
+                                -1.0,  0.0,  0.0 ]);
     // Cube indices
-    var idx = new Uint16Array([0, 1, 1, 2, 2, 3, 3, 0,
-                               4, 5, 5, 6, 6, 7, 7, 4,
-                               0, 4, 1, 7, 2, 6, 3, 5,
-                               0, 2, 4, 3, 5, 7, 1, 6, 0, 7, 2, 5]);
-    initBuffers(vtx, idx);
-    gl.uniform4f(shaderProgram.colorUniform, 0.3, 0.3, 0.3, 1.0);
-    gl.drawElements(gl.LINES, 36, gl.UNSIGNED_SHORT, 0);
+    var idx = new Uint16Array([// Front face
+                                0,  1,  1,  2,  2,  3,  3,  0,  0,  2,
+                               // Back face
+                                4,  5,  5,  6,  6,  7,  7,  4,  5,  7,
+                               // Top face
+                                8,  9,  9, 10, 10, 11, 11,  8,  8, 10,
+                               // Bottom face
+                               12, 13, 13, 14, 14, 15, 15, 12, 13, 15,
+                               // Right face
+                               16, 17, 17, 18, 18, 19, 19, 16, 16, 18,
+                               // Left face
+                               20, 21, 21, 22, 22, 23, 23, 20, 21, 23 ]);
+    vbuf = initBuffer(gl.ARRAY_BUFFER, vtx);
+    ibuf = initBuffer(gl.ELEMENT_ARRAY_BUFFER, idx);
+    gl.vertexAttribPointer(shaderProgram.aposAttrib, 3, gl.FLOAT, false, 0, 0);
+    gl.uniform4f(shaderProgram.colorUniform, 0.5, 0.5, 0.5, 1.0);
+    gl.drawElements(gl.LINES, 60, gl.UNSIGNED_SHORT, 0);
+    // Prepare normals for shader
+    nbuf = initBuffer(gl.ARRAY_BUFFER, nrx);
+    gl.bindBuffer(gl.ARRAY_BUFFER, nbuf);
+    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+    var nrMatrix = [0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0];
+    mat4.invert(nrMatrix, mvMatrix);
+    mat4.transpose(nrMatrix, nrMatrix);
+    var nrMUniform = gl.getUniformLocation(shaderProgram, "u_nrMatrix");
+    gl.uniformMatrix4fv(nrMUniform, false, new Float32Array(nrMatrix));
 }
 
 function unbindBuffers() {

@@ -5,13 +5,14 @@
   <script type="text/javascript" src="halo.js"></script>
   <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
  </head>
- <body onload="onready();">
+ <body onload="onready();" style="width:600;margin:auto">
   <center>
    <h1>Haloed Lines with WebGL</h1><p>WebGL, JavaScript and HTML5</p>
    <canvas width="400" height="300">Your browser doesn't appear to support either <a href="http://html5test.com/" target="_blank">HTML5</a> or <a href="http://get.webgl.org/" target="_blank">WebGL</a>.</canvas>
   <h3>Haloed Lines algorithm</h3>
-  </center>
+  <p><em>The haloed-line-algorithm is a method in computer graphics to represent three-dimensional objects. The drawn lines are enhanced by an invisible outline, the halo, which covers lines in the back and therefore emphasizes the effects of three-dimensionality. <a href="ftp://ftp.sgi.com/opengl/contrib/blythe/advanced99/notes/node107.html" target="_blank">More</a>.</em></p>
   <!-- language: lang-js -->
+  </center>
   <p><pre class="prettyprint">
 function haloLines() {
 
@@ -47,36 +48,112 @@ function haloLines() {
     
 }</pre></p>
   <center>
-  <h3>Drawing lines of any object</h3>
+  <h3>Drawing lines of a cube</h3>
+  <p><em>A cube will be drawn line by line. This function is called twice: once to draw the haloes and finally to draw the object lines in the color buffer.</em></p>
   </center>
   <p><pre class="prettyprint">
 function drawLines() {
 
     // Cube vertices
-    var vtx = new Float32Array([
+    var vtx = new Float32Array([// Front face
                                 -1.0, -1.0,  1.0,
                                  1.0, -1.0,  1.0,
                                  1.0,  1.0,  1.0,
                                 -1.0,  1.0,  1.0,
+                                // Back face
                                 -1.0, -1.0, -1.0,
                                 -1.0,  1.0, -1.0,
                                  1.0,  1.0, -1.0,
-                                 1.0, -1.0, -1.0]);
+                                 1.0, -1.0, -1.0, 
+                                // Top face
+                                -1.0,  1.0, -1.0,
+                                -1.0,  1.0,  1.0,
+                                 1.0,  1.0,  1.0, 
+                                 1.0,  1.0, -1.0,
+                                // Bottom face
+                                -1.0, -1.0, -1.0,
+                                 1.0, -1.0, -1.0,
+                                 1.0, -1.0,  1.0,
+                                -1.0, -1.0,  1.0,
+                                // Right face
+                                 1.0, -1.0, -1.0,
+                                 1.0,  1.0, -1.0,
+                                 1.0,  1.0,  1.0,
+                                 1.0, -1.0,  1.0,
+                                // Left face
+                                -1.0, -1.0, -1.0,
+                                -1.0, -1.0,  1.0,
+                                -1.0,  1.0,  1.0,
+                                -1.0,  1.0, -1.0 ]);
 
-    // Drawing indices
-    var idx = new Uint16Array([0, 1, 1, 2, 2, 3, 3, 0,
-                               4, 5, 5, 6, 6, 7, 7, 4,
-                               0, 4, 1, 7, 2, 6, 3, 5,
-                               0, 2, 4, 3, 5, 7, 1, 6, 0, 7, 2, 5]);
-    initBuffers(vtx, idx);
+  // Cube normals
+  var nrx = new Float32Array([  // Front face
+                                 0.0,  0.0,  1.0,
+                                 0.0,  0.0,  1.0,
+                                 0.0,  0.0,  1.0,
+                                 0.0,  0.0,  1.0,
+                                // Back face
+                                 0.0,  0.0, -1.0,
+                                 0.0,  0.0, -1.0,
+                                 0.0,  0.0, -1.0,
+                                 0.0,  0.0, -1.0,
+                                // Top face
+                                 0.0,  1.0,  0.0,
+                                 0.0,  1.0,  0.0,
+                                 0.0,  1.0,  0.0,
+                                 0.0,  1.0,  0.0,
+                                // Bottom face
+                                 0.0, -1.0,  0.0,
+                                 0.0, -1.0,  0.0,
+                                 0.0, -1.0,  0.0,
+                                 0.0, -1.0,  0.0,
+                                // Right face
+                                 1.0,  0.0,  0.0,
+                                 1.0,  0.0,  0.0,
+                                 1.0,  0.0,  0.0,
+                                 1.0,  0.0,  0.0,
+                                // Left face
+                                -1.0,  0.0,  0.0,
+                                -1.0,  0.0,  0.0,
+                                -1.0,  0.0,  0.0,
+                                -1.0,  0.0,  0.0 ]);
+
+    // Cube indices
+    var idx = new Uint16Array([// Front face
+                                0,  1,  1,  2,  2,  3,  3,  0,  0,  2,
+                               // Back face
+                                4,  5,  5,  6,  6,  7,  7,  4,  5,  7,
+                               // Top face
+                                8,  9,  9, 10, 10, 11, 11,  8,  8, 10,
+                               // Bottom face
+                               12, 13, 13, 14, 14, 15, 15, 12, 13, 15,
+                               // Right face
+                               16, 17, 17, 18, 18, 19, 19, 16, 16, 18,
+                               // Left face
+                               20, 21, 21, 22, 22, 23, 23, 20, 21, 23 ]);
+    vbuf = initBuffer(gl.ARRAY_BUFFER, vtx);
+    ibuf = initBuffer(gl.ELEMENT_ARRAY_BUFFER, idx);
+    gl.vertexAttribPointer(shaderProgram.aposAttrib, 3, gl.FLOAT, false, 0, 0);
 
     // Color and draw
-    gl.uniform4f(shaderProgram.colorUniform, 0.3, 0.3, 0.3, 1.0);
-    gl.drawElements(gl.LINES, 36, gl.UNSIGNED_SHORT, 0);
+    gl.uniform4f(shaderProgram.colorUniform, 0.5, 0.5, 0.5, 1.0);
+    gl.drawElements(gl.LINES, 60, gl.UNSIGNED_SHORT, 0);
 
+    // Prepare normals for shader
+    nbuf = initBuffer(gl.ARRAY_BUFFER, nrx);
+    gl.bindBuffer(gl.ARRAY_BUFFER, nbuf);
+    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+    var nrMatrix = [0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0];
+    mat4.invert(nrMatrix, mvMatrix);
+    mat4.transpose(nrMatrix, nrMatrix);
+    var nrMUniform = gl.getUniformLocation(shaderProgram, "u_nrMatrix");
+    gl.uniformMatrix4fv(nrMUniform, false, new Float32Array(nrMatrix));
 }</pre></p>
   <center>
-<p>Full source on <a href="http://github.com/donschoe/webgl-haloed-lines" target="_blank">github.com/donschoe/webgl-haloed-lines</a></p>
+<p>Full source is available on <a href="http://github.com/donschoe/webgl-haloed-lines" target="_blank">github.com/donschoe/webgl-haloed-lines</a>. The WebGL-code is inspired by the <a href="https://gist.github.com/jay3sh/1173433" target="_blank">minimum-opengles-code.html by jay3sh</a> and based on the <a href="http://internetexception.com/post/2013/02/25/Line-in-WebGL-and-why-you-gonna-do-this-on-your-own.aspx" target="_blank">code to draw simple lines by n.podbielski</a>. Use github to raise issues or add comments to the code.</p>
   </center>
  </body>
 </html>
