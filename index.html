@@ -28,7 +28,7 @@
        document.write('WebGL is <span style="color:B00000">not supported</span>! Please, refer to the official <a href="http://get.webgl.org/" target="_blank">WebGL</a> site for more information on your soft- and hardware configuration.</p>');
       }
     } else {
-     document.write('HTML5 <pre><canvas></pre> element is <span style="color:B00000">not supported</span>! Please, update your browser in order to display WebGL content.</p>');
+     document.write('HTML5 <code><canvas></code> element is <span style="color:B00000">not supported</span>! Please, update your browser in order to display WebGL content.</p>');
     }
    </script>
    <noscript>
@@ -179,7 +179,7 @@ function drawLines() {
     gl.uniformMatrix4fv(nrMUniform, false, new Float32Array(nrMatrix));
 }</pre></p>
   <center>
-<p>Full source is available on <a href="http://github.com/donschoe/webgl-haloed-lines" target="_blank">github.com/donschoe/webgl-haloed-lines</a>. The WebGL-code is inspired by the <a href="https://gist.github.com/jay3sh/1173433" target="_blank">minimum-opengles-code.html by jay3sh</a> and based on the <a href="http://internetexception.com/post/2013/02/25/Line-in-WebGL-and-why-you-gonna-do-this-on-your-own.aspx" target="_blank">code to draw simple lines by n.podbielski</a>. Use github to raise issues or add comments to the code.</p>
+<p>Full source is available on <a href="http://github.com/donschoe/webgl-haloed-lines" target="_blank">github.com/donschoe/webgl-haloed-lines</a>. The WebGL-code is inspired by the <a href="https://gist.github.com/jay3sh/1173433" target="_blank">minimum-opengles-code.html by jay3sh</a> and based on the <a href="http://internetexception.com/post/2013/02/25/Line-in-WebGL-and-why-you-gonna-do-this-on-your-own.aspx" target="_blank">code to draw simple lines by n.podbielski</a>. Used <code>mat4.js</code> from the <a href="https://github.com/toji/gl-matrix" target="_blank">glMatrix project by toji</a>. Use github to raise issues or add comments to the code.</p>
   </center>
  </body>
 </html>
