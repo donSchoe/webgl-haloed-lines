@@ -3,12 +3,38 @@
   <title>Haloed Lines with WebGL</title>
   <script type="text/javascript" src="mat4.js"></script>
   <script type="text/javascript" src="halo.js"></script>
-  <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+  <script type="text/javascript" src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+  <script type="text/javascript">
+    function supports_canvas() {
+      return !!document.createElement('canvas').getContext;
+    }
+    function supports_webgl() {
+      return !!window.WebGLRenderingContext;
+    }
+  </script>
  </head>
  <body onload="onready();" style="width:600;margin:auto">
   <center>
-   <h1>Haloed Lines with WebGL</h1><p>WebGL, JavaScript and HTML5</p>
-   <canvas width="400" height="300">Your browser doesn't appear to support either <a href="http://html5test.com/" target="_blank">HTML5</a> or <a href="http://get.webgl.org/" target="_blank">WebGL</a>.</canvas>
+   <h1>Haloed Lines with WebGL</h1>
+   <!-- BERGIN Tests -->
+   <script>
+    document.write('<p>JavaScript is <span style="color:00B000">enabled</span>, ');
+    if (supports_canvas()) {
+     document.write('HTML5 is <span style="color:00B000">supported</span> and ');
+      if (supports_webgl()) {
+       document.write('WebGL is <span style="color:00B000">supported</span>.<br /><br /><em> Note: If you do not see a rotating cube below, please refer to the official <a href="http://get.webgl.org/" target="_blank">WebGL</a> site for more information on your soft- and hardware configuration. You might need to upgrade your graphic drivers.</em></p>');
+       document.write('<canvas width="400" height="300">It\'s impossible you can read this. Free beer if you do can.</canvas>');
+      } else {
+       document.write('WebGL is <span style="color:B00000">not supported</span>! Please, refer to the official <a href="http://get.webgl.org/" target="_blank">WebGL</a> site for more information on your soft- and hardware configuration.</p>');
+      }
+    } else {
+     document.write('HTML5 <pre><canvas></pre> element is <span style="color:B00000">not supported</span>! Please, update your browser in order to display WebGL content.</p>');
+    }
+   </script>
+   <noscript>
+     <p>JavaScript is <span style="color:B00000">disabled</span>! Please, enable JavaScript to display WebGL content.</p>
+   </noscript>
+   <!-- END Tests -->
   <h3>Haloed Lines algorithm</h3>
   <p><em>The haloed-line-algorithm is a method in computer graphics to represent three-dimensional objects. The drawn lines are enhanced by an invisible outline, the halo, which covers lines in the back and therefore emphasizes the effects of three-dimensionality. <a href="ftp://ftp.sgi.com/opengl/contrib/blythe/advanced99/notes/node107.html" target="_blank">More</a>.</em></p>
   <!-- language: lang-js -->
